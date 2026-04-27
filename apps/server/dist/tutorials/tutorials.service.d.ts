@@ -1,4 +1,4 @@
-interface Tutorial {
+export interface Tutorial {
     id: number;
     title: string;
     description: string;
@@ -20,4 +20,3 @@ export declare class TutorialsService {
     };
     findOne(id: number): Tutorial;
 }
-export {};

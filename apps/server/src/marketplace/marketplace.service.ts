@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-interface IdleItem {
+export interface IdleItem {
   id: number;
   title: string;
   description: string;
@@ -14,7 +14,7 @@ interface IdleItem {
   createdAt: string;
 }
 
-interface MaterialRequest {
+export interface MaterialRequest {
   id: number;
   title: string;
   description: string;

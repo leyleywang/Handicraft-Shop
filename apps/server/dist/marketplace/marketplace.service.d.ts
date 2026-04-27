@@ -1,4 +1,4 @@
-interface IdleItem {
+export interface IdleItem {
     id: number;
     title: string;
     description: string;
@@ -11,7 +11,7 @@ interface IdleItem {
     views: number;
     createdAt: string;
 }
-interface MaterialRequest {
+export interface MaterialRequest {
     id: number;
     title: string;
     description: string;
@@ -45,4 +45,3 @@ export declare class MarketplaceService {
     publishIdleItem(publishDto: any): IdleItem;
     publishMaterialRequest(publishDto: any): MaterialRequest;
 }
-export {};

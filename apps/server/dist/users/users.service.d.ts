@@ -1,4 +1,10 @@
-interface User {
+export interface UserStats {
+    worksCount: number;
+    collectionsCount: number;
+    followersCount: number;
+    followingCount: number;
+}
+export interface User {
     id: number;
     username: string;
     avatar?: string;
@@ -6,12 +12,7 @@ interface User {
     email: string;
     phone?: string;
     createdAt: string;
-    stats: {
-        worksCount: number;
-        collectionsCount: number;
-        followersCount: number;
-        followingCount: number;
-    };
+    stats: UserStats;
 }
 export declare class UsersService {
     private users;
@@ -25,11 +26,5 @@ export declare class UsersService {
         phone?: string;
         createdAt: string;
     };
-    getStats(id: number): {
-        worksCount: number;
-        collectionsCount: number;
-        followersCount: number;
-        followingCount: number;
-    };
+    getStats(id: number): UserStats;
 }
-export {};

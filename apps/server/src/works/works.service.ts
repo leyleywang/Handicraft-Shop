@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-interface Work {
+export interface WorkStep {
+  description: string;
+}
+
+export interface Work {
   id: number;
   title: string;
   description: string;
@@ -12,7 +16,7 @@ interface Work {
   views: number;
   likes: number;
   tags: string[];
-  steps: { description: string }[];
+  steps: WorkStep[];
   enableMatching: boolean;
   createdAt: string;
 }

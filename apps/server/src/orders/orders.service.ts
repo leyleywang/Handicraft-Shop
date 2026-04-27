@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-interface OrderItem {
+export interface OrderItem {
   id: number;
   name: string;
   specs: string;
@@ -9,7 +9,7 @@ interface OrderItem {
   image: string;
 }
 
-interface Order {
+export interface Order {
   id: number;
   orderNo: string;
   userId: number;
@@ -19,7 +19,7 @@ interface Order {
   items: OrderItem[];
 }
 
-interface Transaction {
+export interface Transaction {
   id: number;
   type: 'sale' | 'purchase';
   title: string;
