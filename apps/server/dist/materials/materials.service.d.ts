@@ -1,4 +1,4 @@
-interface Material {
+export interface Material {
     id: number;
     name: string;
     description: string;
@@ -35,4 +35,3 @@ export declare class MaterialsService {
         value: string;
     }[];
 }
-export {};

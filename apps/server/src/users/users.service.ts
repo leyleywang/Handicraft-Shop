@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
-interface User {
+export interface UserStats {
+  worksCount: number;
+  collectionsCount: number;
+  followersCount: number;
+  followingCount: number;
+}
+
+export interface User {
   id: number;
   username: string;
   avatar?: string;
@@ -8,12 +15,7 @@ interface User {
   email: string;
   phone?: string;
   createdAt: string;
-  stats: {
-    worksCount: number;
-    collectionsCount: number;
-    followersCount: number;
-    followingCount: number;
-  };
+  stats: UserStats;
 }
 
 @Injectable()

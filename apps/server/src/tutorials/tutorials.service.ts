@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-interface Tutorial {
+export interface Tutorial {
   id: number;
   title: string;
   description: string;

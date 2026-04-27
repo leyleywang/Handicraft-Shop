@@ -1,4 +1,4 @@
-interface OrderItem {
+export interface OrderItem {
     id: number;
     name: string;
     specs: string;
@@ -6,7 +6,7 @@ interface OrderItem {
     quantity: number;
     image: string;
 }
-interface Order {
+export interface Order {
     id: number;
     orderNo: string;
     userId: number;
@@ -15,7 +15,7 @@ interface Order {
     total: number;
     items: OrderItem[];
 }
-interface Transaction {
+export interface Transaction {
     id: number;
     type: 'sale' | 'purchase';
     title: string;
@@ -41,4 +41,3 @@ export declare class OrdersService {
         items: Transaction[];
     };
 }
-export {};

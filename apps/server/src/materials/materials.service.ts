@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-interface Material {
+export interface Material {
   id: number;
   name: string;
   description: string;
