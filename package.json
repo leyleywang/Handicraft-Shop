@@ -1,0 +1,16 @@
+{
+  "name": "handicraft-shop",
+  "version": "1.0.0",
+  "description": "小众手工饰品制作平台",
+  "private": true,
+  "scripts": {
+    "dev:web": "pnpm --filter @handicraft/web dev",
+    "dev:server": "pnpm --filter @handicraft/server start:dev",
+    "build:web": "pnpm --filter @handicraft/web build",
+    "build:server": "pnpm --filter @handicraft/server build",
+    "install": "pnpm install"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
