@@ -26,9 +26,11 @@
       </div>
       <div class="publish-buttons">
         <button class="btn btn-primary" @click="showPublishModal = 'material'">
+          <Icon name="search" class="btn-icon" />
           发布材料求购
         </button>
         <button class="btn btn-secondary" @click="showPublishModal = 'idle'">
+          <Icon name="tag" class="btn-icon" />
           发布成品闲置
         </button>
       </div>
@@ -85,7 +87,7 @@
           <div class="transactions-list">
             <div v-for="txn in transactions" :key="txn.id" class="transaction-card card">
               <div class="txn-type" :class="txn.type">
-                <span class="type-icon">{{ txn.type === 'sale' ? '💰' : '🛒' }}</span>
+                <Icon :name="txn.type === 'sale' ? 'dollar-sign' : 'shopping-bag'" class="type-icon" />
                 <span class="type-text">{{ txn.type === 'sale' ? '卖出' : '买入' }}</span>
               </div>
               <div class="txn-content">
@@ -114,11 +116,11 @@
         <div v-if="activeTab === 'tutorials'" class="tutorials-section">
           <h3 class="section-subtitle">新手制作教程</h3>
           <div class="tutorials-grid">
-            <div v-for="tutorial in tutorials" :key="tutorial.id" class="tutorial-card card">
+            <div v-for="tutorial in tutorials" :key="tutorial.id" class="tutorial-card card" @click="openTutorial(tutorial)">
               <div class="tutorial-thumbnail">
                 <img :src="tutorial.cover" :alt="tutorial.title" />
                 <div v-if="tutorial.type === 'video'" class="video-indicator">
-                  <span class="play-icon">▶</span>
+                  <Icon name="play" class="play-icon" />
                 </div>
                 <div class="tutorial-meta">
                   <span class="tag" :class="`tag-${tutorial.type === 'video' ? 'blue' : 'purple'}`">
@@ -131,13 +133,119 @@
                 <h4 class="tutorial-title">{{ tutorial.title }}</h4>
                 <p class="tutorial-desc">{{ tutorial.description }}</p>
                 <div class="tutorial-stats">
-                  <span class="duration">⏱ {{ tutorial.duration }}</span>
-                  <span class="views">👁 {{ tutorial.views }} 人学习</span>
+                  <span class="duration">
+                    <Icon name="clock" class="small-icon" />
+                    {{ tutorial.duration }}
+                  </span>
+                  <span class="views">
+                    <Icon name="eye" class="small-icon" />
+                    {{ tutorial.views }} 人学习
+                  </span>
                 </div>
-                <button class="btn btn-primary start-btn">开始学习</button>
+                <button class="btn btn-primary start-btn" @click.stop="openTutorial(tutorial)">
+                  <Icon name="play-circle" class="btn-icon" />
+                  开始学习
+                </button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="selectedTutorial" class="modal-overlay tutorial-modal" @click.self="selectedTutorial = null">
+      <div class="modal-content card tutorial-content">
+        <div class="modal-header">
+          <div class="tutorial-header-info">
+            <h2 class="modal-title">{{ selectedTutorial.title }}</h2>
+            <div class="tutorial-meta-row">
+              <span class="tag" :class="`tag-${selectedTutorial.type === 'video' ? 'blue' : 'purple'}`">
+                <Icon :name="selectedTutorial.type === 'video' ? 'video' : 'file-text'" class="small-icon" />
+                {{ selectedTutorial.type === 'video' ? '视频教程' : '图文教程' }}
+              </span>
+              <span class="difficulty-badge">
+                <Icon :name="getDifficultyIcon(selectedTutorial.difficulty)" class="small-icon" />
+                {{ getDifficultyLabel(selectedTutorial.difficulty) }}
+              </span>
+              <span class="duration-info">
+                <Icon name="clock" class="small-icon" />
+                {{ selectedTutorial.duration }}
+              </span>
+            </div>
+          </div>
+          <button class="close-btn" @click="selectedTutorial = null">
+            <Icon name="x" />
+          </button>
+        </div>
+        
+        <div class="tutorial-body">
+          <div v-if="selectedTutorial.type === 'video'" class="video-section">
+            <div class="video-player">
+              <div class="video-placeholder">
+                <img :src="selectedTutorial.cover" :alt="selectedTutorial.title" />
+                <div class="play-overlay">
+                  <button class="play-btn">
+                    <Icon name="play" />
+                  </button>
+                </div>
+              </div>
+              <div class="video-info">
+                <p class="video-note">
+                  <Icon name="info" class="small-icon" />
+                  这是一个示例视频教程。实际应用中，这里会嵌入真实的视频播放器。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="article-section">
+            <div class="article-content">
+              <div class="article-intro">
+                <p>{{ selectedTutorial.description }}</p>
+              </div>
+              
+              <div v-if="selectedTutorial.steps && selectedTutorial.steps.length > 0" class="steps-section">
+                <h3 class="section-heading">
+                  <Icon name="list" class="section-icon" />
+                  制作步骤
+                </h3>
+                <div v-for="(step, index) in selectedTutorial.steps" :key="index" class="step-item">
+                  <div class="step-header">
+                    <span class="step-number">{{ index + 1 }}</span>
+                    <h4 class="step-title">{{ step.title }}</h4>
+                  </div>
+                  <div class="step-content">
+                    <div v-if="step.image" class="step-image">
+                      <img :src="step.image" :alt="step.title" />
+                    </div>
+                    <p class="step-description">{{ step.description }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="selectedTutorial.images && selectedTutorial.images.length > 0" class="gallery-section">
+                <h3 class="section-heading">
+                  <Icon name="image" class="section-icon" />
+                  参考图片
+                </h3>
+                <div class="image-gallery">
+                  <div v-for="(img, index) in selectedTutorial.images" :key="index" class="gallery-item">
+                    <img :src="img" :alt="`参考图片 ${index + 1}`" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <span class="view-count">
+            <Icon name="eye" class="small-icon" />
+            {{ selectedTutorial.views }} 人已学习
+          </span>
+          <button class="btn btn-primary" @click="selectedTutorial = null">
+            完成学习
+          </button>
         </div>
       </div>
     </div>
@@ -231,6 +339,8 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import Icon from '../components/Icon.vue'
+import { marketplaceApi } from '../api'
 
 const tabs = [
   { label: '材料订单', value: 'orders' },
@@ -240,6 +350,7 @@ const tabs = [
 
 const activeTab = ref('orders')
 const showPublishModal = ref<'material' | 'idle' | null>(null)
+const selectedTutorial = ref<any>(null)
 
 const materialOrders = ref([
   {
@@ -320,42 +431,107 @@ const tutorials = ref([
   {
     id: 1,
     title: '零基础串珠入门：制作简单手链',
-    description: '从认识工具材料开始，学习基础串珠技巧，完成第一条属于自己的手链。',
+    description: '从认识工具材料开始，学习基础串珠技巧，完成第一条属于自己的手链。本教程适合完全没有手工经验的新手学习。',
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=step%20by%20step%20beading%20tutorial%20making%20simple%20bracelet%20beginner%20jewelry%20making%20on%20white%20background&image_size=square',
     type: 'video',
     difficulty: 'beginner',
     duration: '15分钟',
-    views: 3256
+    views: 3256,
+    videoUrl: 'demo-video-1'
   },
   {
     id: 2,
     title: '绕线基础：单石吊坠包裹技巧',
-    description: '学习铜线绕线的基础手法，掌握如何用铜线包裹一颗宝石制作吊坠。',
+    description: '学习铜线绕线的基础手法，掌握如何用铜线包裹一颗宝石制作吊坠。包含框架制作、宝石固定、装饰缠绕等核心技巧。',
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=wire%20wrapping%20tutorial%20single%20stone%20pendant%20copper%20wire%20jewelry%20making%20technique%20on%20white%20background&image_size=square',
     type: 'video',
     difficulty: 'intermediate',
     duration: '25分钟',
-    views: 1892
+    views: 1892,
+    videoUrl: 'demo-video-2'
   },
   {
     id: 3,
     title: '蜡线编织：南美蜡线编绳基础',
-    description: '图文教程详细展示各种基础结的编法，包括平结、蛇结、金刚结等。',
+    description: '图文教程详细展示各种基础结的编法，包括平结、蛇结、金刚结等。每个结都配有详细的步骤图解，适合零基础入门学习。',
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=macrame%20knotting%20tutorial%20waxed%20cord%20jewelry%20making%20various%20knots%20illustration%20on%20white%20background&image_size=square',
     type: 'article',
     difficulty: 'beginner',
     duration: '阅读时间 10分钟',
-    views: 2543
+    views: 2543,
+    steps: [
+      {
+        title: '认识编绳工具与材料',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=macrame%20tools%20and%20materials%20waxed%20cord%20scissors%20tape%20measuring%20jewelry%20making%20tools%20on%20white%20background&image_size=square',
+        description: '编绳需要准备的工具有：南美蜡线（推荐0.8mm或1.0mm粗细）、剪刀、卷尺、固定夹或胶带、打火机（烧粘收尾用）。建议新手从纯色蜡线开始练习。'
+      },
+      {
+        title: '基础结：平结的编法',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=step%20by%20step%20square%20knot%20macrame%20tutorial%20illustration%20showing%20left%20right%20cords%20weaving%20on%20white%20background&image_size=square',
+        description: '平结是编绳中最常用的结之一。方法：1. 取四根线，中间两根为轴线，左右各一根为编线；2. 左线压轴线后搭在右线上；3. 右线从下穿过轴线和左线形成的圈；4. 拉紧，完成半个平结；5. 换方向重复，左右交替编织即为完整平结。'
+      },
+      {
+        title: '基础结：蛇结的编法',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=snake%20knot%20macrame%20tutorial%20step%20by%20step%20illustration%20cord%20twisting%20technique%20jewelry%20making%20on%20white%20background&image_size=square',
+        description: '蛇结常用于手链主体或装饰。方法：1. 用两根线，左线绕右线一圈形成一个圈；2. 右线穿过左线形成的圈，绕左线一圈；3. 同时拉紧两根线；4. 重复编织，注意每次松紧一致，这样编出的蛇结才会均匀美观。'
+      },
+      {
+        title: '基础结：金刚结的编法',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=diamond%20knot%20macrame%20tutorial%20illustration%20jewelry%20cord%20weaving%20technique%20on%20white%20background&image_size=square',
+        description: '金刚结比蛇结更牢固，常用于手链扣头。方法：1. 取两根线，左线在上；2. 左线绕右线一圈，形成一个圈；3. 右线从左线圈下方穿过，绕左线一圈；4. 拉紧，但不要完全收紧；5. 重复编织3-5次后再整体拉紧，这样金刚结就编好了。'
+      },
+      {
+        title: '收尾技巧与烧粘处理',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=macrame%20finishing%20technique%20cords%20fusing%20with%20lighter%20jewelry%20making%20ending%20on%20white%20background&image_size=square',
+        description: '南美蜡线可以通过烧粘来收尾。方法：1. 用剪刀将多余的线剪掉，留下约2mm的线头；2. 用打火机外焰快速烤线头，待线头融化成珠状时，用手指（注意防烫，可以用工具）轻轻按压使其固定；3. 烧粘时注意不要烧到主体部分，动作要快，避免蜡线燃烧产生黑烟。'
+      }
+    ],
+    images: [
+      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=various%20macrame%20knots%20examples%20square%20snake%20diamond%20knots%20display%20jewelry%20making%20on%20white%20background&image_size=square',
+      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=completed%20macrame%20bracelets%20in%20different%20colors%20and%20styles%20handmade%20jewelry%20on%20white%20background&image_size=square',
+      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=macrame%20necklace%20with%20gemstone%20pendant%20handwoven%20bohemian%20style%20jewelry%20on%20white%20background&image_size=square'
+    ]
   },
   {
     id: 4,
     title: '天然石入门：认识常见宝石种类',
-    description: '图文讲解常见手工饰品用天然石的种类、特点、鉴别方法和保养知识。',
+    description: '图文讲解常见手工饰品用天然石的种类、特点、鉴别方法和保养知识。帮助你选择最适合自己作品的天然石材料。',
     cover: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=various%20natural%20gemstones%20collection%20moonstone%20amethyst%20rose%20quartz%20citrine%20educational%20guide%20on%20white%20background&image_size=square',
     type: 'article',
     difficulty: 'beginner',
     duration: '阅读时间 8分钟',
-    views: 4126
+    views: 4126,
+    steps: [
+      {
+        title: '月光石 (Moonstone)',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=natural%20moonstone%20gemstones%20with%20blue%20adularescence%20sheen%20various%20shapes%20jewelry%20making%20on%20white%20background&image_size=square',
+        description: '月光石是长石类宝石，以其独特的"月光效应"（蓝光/彩光）著称。特点：透明度从半透明到不透明，常见颜色有白色、灰色、奶油色。品质判断：蓝光越强、范围越大、越居中的品质越好。适用工艺：串珠、绕线、编织。保养：避免高温和化学品，定期用软布擦拭。'
+      },
+      {
+        title: '紫水晶 (Amethyst)',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=natural%20amethyst%20purple%20crystal%20gemstones%20various%20shades%20round%20beads%20jewelry%20making%20on%20white%20background&image_size=square',
+        description: '紫水晶是石英家族中最受欢迎的成员之一，以其高贵的紫色著称。特点：颜色从浅紫到深紫不等，有时会有"紫黄晶"双色现象。品质判断：颜色浓郁均匀、无明显棉絮和冰裂的品质最佳。适用工艺：串珠、绕线。保养：避免长时间阳光暴晒，否则颜色可能变淡。'
+      },
+      {
+        title: '粉晶 (Rose Quartz)',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=natural%20rose%20quartz%20pink%20gemstones%20round%20beads%20various%20shades%20jewelry%20making%20on%20white%20background&image_size=square',
+        description: '粉晶又称蔷薇水晶，以其柔和的粉红色著称，被视为"爱情石"。特点：颜色通常较浅，呈半透明状，有时会有天然的冰裂纹。品质判断：颜色越粉嫩均匀、质地越通透的品质越好。适用工艺：串珠、编织。保养：避免高温和锐物撞击，粉晶相对较脆。'
+      },
+      {
+        title: '虎眼石 (Tiger Eye)',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=natural%20tiger%20eye%20gemstones%20golden%20brown%20chatoyancy%20round%20beads%20jewelry%20making%20on%20white%20background&image_size=square',
+        description: '虎眼石是石英家族的一员，以其独特的"猫眼效应"和金黄色调著称。特点：具有明显的丝绢光泽和移动的光带（猫眼效应），颜色为黄褐色到金棕色。品质判断：猫眼效应越明显、光带越集中的品质越好。适用工艺：串珠、男士饰品。保养：相对耐造，适合新手练习。'
+      },
+      {
+        title: '天然石选购与鉴别要点',
+        image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=comparison%20natural%20gemstones%20vs%20synthetic%20stones%20jewelry%20making%20identification%20guide%20on%20white%20background&image_size=square',
+        description: '选购天然石时要注意：1. 天然石多少会有天然瑕疵（棉絮、冰裂、矿缺），完全完美无瑕的要么品质极高要么是仿品；2. 观察颜色：天然石颜色分布往往不均匀，染色石颜色过于均匀且浮于表面；3. 手感：天然石手感冰凉，玻璃仿品温度变化快；4. 建议从信誉好的商家购买，并索要证书。新手可以先从价位适中的材料入手练习。'
+      }
+    ],
+    images: [
+      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=gemstone%20healing%20properties%20chart%20crystals%20and%20stones%20infographic%20jewelry%20making%20on%20white%20background&image_size=square',
+      'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=handmade%20jewelry%20collection%20using%20various%20natural%20gemstones%20moonstone%20amethyst%20rose%20quartz%20on%20white%20background&image_size=square'
+    ]
   }
 ])
 
@@ -389,15 +565,56 @@ const getDifficultyLabel = (level: string) => {
   return labels[level] || '未知'
 }
 
-const handlePublish = () => {
-  alert(`发布成功！\n\n标题: ${publishForm.title}\n${showPublishModal.value === 'material' ? `数量: ${publishForm.quantity}\n预算: ${publishForm.budget}` : `价格: ${publishForm.quantity}`}`)
-  showPublishModal.value = null
-  publishForm.title = ''
-  publishForm.description = ''
-  publishForm.quantity = ''
-  publishForm.budget = ''
-  publishForm.deadline = ''
-  publishForm.tags = ''
+const getDifficultyIcon = (level: string) => {
+  const icons: Record<string, string> = {
+    beginner: 'seedling',
+    intermediate: 'sprout',
+    advanced: 'tree',
+    expert: 'crown'
+  }
+  return icons[level] || 'star'
+}
+
+const openTutorial = (tutorial: any) => {
+  selectedTutorial.value = tutorial
+}
+
+const handlePublish = async () => {
+  try {
+    if (showPublishModal.value === 'material') {
+      const requestData = {
+        title: publishForm.title,
+        description: publishForm.description,
+        quantity: parseInt(publishForm.quantity) || 0,
+        budget: parseFloat(publishForm.budget) || 0,
+        deadline: publishForm.deadline || null,
+        userId: 1
+      }
+      await marketplaceApi.publishMaterialRequest(requestData)
+      alert(`✅ 材料求购发布成功！\n\n标题: ${publishForm.title}\n数量: ${publishForm.quantity}\n预算: ¥${publishForm.budget}\n\n该信息将显示在首页的材料求购区域。`)
+    } else {
+      const idleData = {
+        title: publishForm.title,
+        description: publishForm.description,
+        price: parseFloat(publishForm.quantity) || 0,
+        tags: publishForm.tags.split(',').map((t: string) => t.trim()).filter((t: string) => t),
+        userId: 1
+      }
+      await marketplaceApi.publishIdleItem(idleData)
+      alert(`✅ 成品闲置发布成功！\n\n标题: ${publishForm.title}\n价格: ¥${publishForm.quantity}\n\n该信息将显示在首页的成品闲置区域。`)
+    }
+    
+    showPublishModal.value = null
+    publishForm.title = ''
+    publishForm.description = ''
+    publishForm.quantity = ''
+    publishForm.budget = ''
+    publishForm.deadline = ''
+    publishForm.tags = ''
+  } catch (error) {
+    console.error('发布失败:', error)
+    alert('发布失败，请稍后重试')
+  }
 }
 </script>
 
@@ -979,6 +1196,254 @@ const handlePublish = () => {
   padding-top: 8px;
 }
 
+.tutorial-modal .modal-content {
+  max-width: 700px;
+  max-height: 90vh;
+}
+
+.tutorial-header-info {
+  flex: 1;
+}
+
+.tutorial-meta-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.tutorial-meta-row .tag {
+  display: flex;
+  align-items: center;
+}
+
+.difficulty-badge {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: #e9d8fd;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #553c9a;
+}
+
+.duration-info {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: #f7fafc;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #718096;
+}
+
+.tutorial-body {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.video-section {
+  margin-bottom: 20px;
+}
+
+.video-player {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.video-placeholder {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #1a1a2e;
+}
+
+.video-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+.play-overlay:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.play-btn {
+  width: 70px;
+  height: 70px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #6b46c1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.play-btn:hover {
+  transform: scale(1.1);
+  background: white;
+}
+
+.video-info {
+  padding: 16px;
+  background: #f7fafc;
+  border-radius: 0 0 12px 12px;
+}
+
+.video-note {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #718096;
+}
+
+.article-section {
+  padding: 8px 0;
+}
+
+.article-intro {
+  margin-bottom: 24px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #4a5568;
+}
+
+.steps-section {
+  margin-bottom: 32px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 20px;
+}
+
+.section-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  color: #6b46c1;
+}
+
+.step-item {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #f7fafc;
+  border-radius: 12px;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  margin-right: 12px;
+}
+
+.step-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.step-content {
+  padding-left: 40px;
+}
+
+.step-image {
+  width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.step-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.step-description {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #4a5568;
+}
+
+.gallery-section {
+  margin-bottom: 20px;
+}
+
+.image-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.gallery-item {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gallery-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.view-count {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #718096;
+}
+
 @media (max-width: 768px) {
   .profile-header {
     flex-direction: column;
@@ -1000,6 +1465,20 @@ const handlePublish = () => {
 
   .tutorials-grid {
     grid-template-columns: 1fr;
+  }
+
+  .tutorial-modal .modal-content {
+    max-width: 100%;
+    margin: 10px;
+  }
+
+  .tutorial-meta-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .image-gallery {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>

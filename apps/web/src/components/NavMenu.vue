@@ -2,7 +2,7 @@
   <nav class="nav-menu">
     <div class="nav-container">
       <router-link to="/" class="nav-brand">
-        <span class="brand-icon">✨</span>
+        <Icon name="gem" class="brand-icon" />
         <span class="brand-text">手工饰品坊</span>
       </router-link>
       <div class="nav-links">
@@ -13,7 +13,7 @@
           class="nav-link"
           :class="{ active: isActive(item.path) }"
         >
-          <span class="nav-icon">{{ item.icon }}</span>
+          <Icon :name="item.icon" class="nav-icon" />
           <span class="nav-text">{{ item.name }}</span>
         </router-link>
       </div>
@@ -24,14 +24,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import Icon from './Icon.vue'
 
 const route = useRoute()
 
 const menuItems = [
-  { name: '首页', path: '/', icon: '🏠' },
-  { name: '商城', path: '/mall', icon: '🛍️' },
-  { name: '作品', path: '/works', icon: '🎨' },
-  { name: '我的', path: '/profile', icon: '👤' }
+  { name: '首页', path: '/', icon: 'home' },
+  { name: '商城', path: '/mall', icon: 'shopping-cart' },
+  { name: '作品', path: '/works', icon: 'artboard' },
+  { name: '我的', path: '/profile', icon: 'user' }
 ]
 
 const isActive = (path: string) => {

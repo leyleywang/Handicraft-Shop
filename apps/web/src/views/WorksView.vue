@@ -7,7 +7,8 @@
           <p class="page-subtitle">展示你的创意，发现志同道合的手工艺人</p>
         </div>
         <button class="btn btn-primary upload-btn" @click="showUploadModal = true">
-          + 上传作品
+          <Icon name="plus" class="btn-icon" />
+          上传作品
         </button>
       </div>
     </div>
@@ -23,7 +24,7 @@
             :class="{ active: selectedDifficulty === level.value }"
             @click="selectedDifficulty = level.value"
           >
-            <span class="difficulty-icon">{{ level.icon }}</span>
+            <Icon :name="level.icon" class="difficulty-icon" />
             <span>{{ level.label }}</span>
           </button>
         </div>
@@ -37,7 +38,7 @@
           </div>
         </label>
         <div v-if="preferenceMatch" class="match-info">
-          <span class="info-icon">💡</span>
+          <Icon name="lightbulb" class="info-icon" />
           根据买家偏好（小众风格、定制需求）推送作品
         </div>
       </div>
@@ -60,10 +61,13 @@
           <h3 class="work-title">{{ work.title }}</h3>
           <div class="work-stats">
             <div class="difficulty-badge" :class="`difficulty-${work.difficulty}`">
-              <span class="difficulty-icon">{{ getDifficultyIcon(work.difficulty) }}</span>
+              <Icon :name="getDifficultyIcon(work.difficulty)" class="difficulty-icon" />
               <span>{{ getDifficultyLabel(work.difficulty) }}</span>
             </div>
-            <span class="view-count">👁 {{ work.views }} 浏览</span>
+            <span class="view-count">
+              <Icon name="eye" class="small-icon" />
+              {{ work.views }} 浏览
+            </span>
           </div>
           <p class="work-description">{{ work.description }}</p>
           <div class="work-tags">
@@ -242,13 +246,14 @@
 
 <script setup lang="ts">
 import { ref, computed, reactive } from 'vue'
+import Icon from '../components/Icon.vue'
 
 const difficultyLevels = [
-  { label: '全部', value: 'all', icon: '🌟' },
-  { label: '入门', value: 'beginner', icon: '🌱' },
-  { label: '进阶', value: 'intermediate', icon: '🌿' },
-  { label: '高级', value: 'advanced', icon: '🌳' },
-  { label: '大师级', value: 'expert', icon: '🌲' }
+  { label: '全部', value: 'all', icon: 'star' },
+  { label: '入门', value: 'beginner', icon: 'seedling' },
+  { label: '进阶', value: 'intermediate', icon: 'sprout' },
+  { label: '高级', value: 'advanced', icon: 'tree' },
+  { label: '大师级', value: 'expert', icon: 'crown' }
 ]
 
 const selectedDifficulty = ref('all')
@@ -356,12 +361,12 @@ const filteredWorks = computed(() => {
 
 const getDifficultyIcon = (level: string) => {
   const icons: Record<string, string> = {
-    beginner: '🌱',
-    intermediate: '🌿',
-    advanced: '🌳',
-    expert: '🌲'
+    beginner: 'seedling',
+    intermediate: 'sprout',
+    advanced: 'tree',
+    expert: 'crown'
   }
-  return icons[level] || '⭐'
+  return icons[level] || 'star'
 }
 
 const getDifficultyLabel = (level: string) => {

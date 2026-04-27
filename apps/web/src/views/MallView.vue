@@ -6,52 +6,58 @@
     </div>
 
     <div class="filter-section card">
-      <div class="filter-group">
-        <span class="filter-label">饰品类型:</span>
-        <div class="filter-options">
-          <button 
-            v-for="type in jewelryTypes" 
-            :key="type.value"
-            class="filter-btn"
-            :class="{ active: selectedTypes.includes(type.value) }"
-            @click="toggleFilter('types', type.value)"
-          >
-            {{ type.label }}
-          </button>
+      <div class="filter-row">
+        <div class="filter-item">
+          <span class="filter-label">饰品类型</span>
+          <div class="filter-options compact">
+            <button 
+              v-for="type in jewelryTypes" 
+              :key="type.value"
+              class="filter-btn compact"
+              :class="{ active: selectedTypes.includes(type.value) }"
+              @click="toggleFilter('types', type.value)"
+            >
+              {{ type.label }}
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="filter-group">
-        <span class="filter-label">材料类别:</span>
-        <div class="filter-options">
-          <button 
-            v-for="category in materialCategories" 
-            :key="category.value"
-            class="filter-btn"
-            :class="{ active: selectedCategories.includes(category.value) }"
-            @click="toggleFilter('categories', category.value)"
-          >
-            {{ category.label }}
-          </button>
+      <div class="filter-row">
+        <div class="filter-item">
+          <span class="filter-label">材料类别</span>
+          <div class="filter-options compact">
+            <button 
+              v-for="category in materialCategories" 
+              :key="category.value"
+              class="filter-btn compact"
+              :class="{ active: selectedCategories.includes(category.value) }"
+              @click="toggleFilter('categories', category.value)"
+            >
+              {{ category.label }}
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="filter-group">
-        <span class="filter-label">工艺适配:</span>
-        <div class="filter-options">
-          <button 
-            v-for="tech in techniques" 
-            :key="tech.value"
-            class="filter-btn"
-            :class="{ active: selectedTechniques.includes(tech.value) }"
-            @click="toggleFilter('techniques', tech.value)"
-          >
-            {{ tech.label }}
-          </button>
+      <div class="filter-row">
+        <div class="filter-item">
+          <span class="filter-label">工艺适配</span>
+          <div class="filter-options compact">
+            <button 
+              v-for="tech in techniques" 
+              :key="tech.value"
+              class="filter-btn compact"
+              :class="{ active: selectedTechniques.includes(tech.value) }"
+              @click="toggleFilter('techniques', tech.value)"
+            >
+              {{ tech.label }}
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="filter-group">
+      <div class="filter-row filter-row-inline">
         <label class="checkbox-label">
           <input 
             type="checkbox" 
@@ -60,6 +66,10 @@
           />
           <span class="checkbox-text">仅显示有试用装的商品</span>
         </label>
+        <button class="reset-btn" @click="resetFilters">
+          <Icon name="refresh-cw" class="btn-icon" />
+          重置筛选
+        </button>
       </div>
     </div>
 
@@ -121,6 +131,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import Icon from '../components/Icon.vue'
 
 const jewelryTypes = [
   { label: '全部', value: 'all' },
@@ -325,6 +336,13 @@ const filteredMaterials = computed(() => {
   })
 })
 
+const resetFilters = () => {
+  selectedTypes.value = ['all']
+  selectedCategories.value = ['all']
+  selectedTechniques.value = ['all']
+  showTrialOnly.value = false
+}
+
 const showTrialInfo = (material: any) => {
   alert(`试用装信息：\n${material.name} 试用装\n价格: ¥${material.trialPrice}\n\n试用装为小份包装，适合新手尝试。`)
 }
@@ -354,41 +372,65 @@ const showTrialInfo = (material: any) => {
 
 .filter-section {
   margin-bottom: 24px;
+  padding: 16px 20px;
 }
 
-.filter-group {
+.filter-row {
   display: flex;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
 }
 
-.filter-group:last-child {
+.filter-row:last-child {
   margin-bottom: 0;
 }
 
+.filter-row-inline {
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 12px;
+}
+
 .filter-label {
-  min-width: 80px;
   font-weight: 500;
   color: #4a5568;
-  padding-top: 6px;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
 .filter-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+}
+
+.filter-options.compact {
+  flex: 1;
 }
 
 .filter-btn {
-  padding: 8px 16px;
+  padding: 6px 14px;
   border: 1px solid #e2e8f0;
   background: white;
-  border-radius: 20px;
-  font-size: 14px;
+  border-radius: 16px;
+  font-size: 13px;
   color: #4a5568;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.filter-btn.compact {
+  padding: 5px 12px;
+  font-size: 12px;
 }
 
 .filter-btn:hover {
@@ -400,6 +442,24 @@ const showTrialInfo = (material: any) => {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-color: transparent;
+}
+
+.reset-btn {
+  padding: 6px 14px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 16px;
+  font-size: 13px;
+  color: #718096;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.reset-btn:hover {
+  border-color: #6b46c1;
+  color: #6b46c1;
 }
 
 .checkbox-label {

@@ -1,7 +1,17 @@
+@import url('//at.alicdn.com/t/font_2410292_7k45e1dpkg9.css');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -89,4 +99,44 @@ a {
 .tag-blue {
   background-color: #bee3f8;
   color: #2a4365;
+}
+
+.btn-icon {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.small-icon {
+  margin-right: 4px;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.brand-icon {
+  font-size: 24px;
+  color: #6b46c1;
+}
+
+.nav-icon {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.difficulty-icon {
+  margin-right: 4px;
+}
+
+.info-icon {
+  margin-right: 6px;
+  color: #ecc94b;
+}
+
+.type-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.play-icon {
+  font-size: 24px;
+  color: white;
 }

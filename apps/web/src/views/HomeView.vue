@@ -10,7 +10,7 @@
     <div class="content-section">
       <div class="section-header">
         <h2 class="section-title">
-          <span class="title-icon">💎</span>
+          <Icon name="gem" class="title-icon" />
           成品闲置
         </h2>
         <router-link to="/works" class="view-more">查看全部 →</router-link>
@@ -45,7 +45,7 @@
     <div class="content-section">
       <div class="section-header">
         <h2 class="section-title">
-          <span class="title-icon">🔍</span>
+          <Icon name="search" class="title-icon" />
           材料求购
         </h2>
         <router-link to="/profile" class="view-more">发布求购 →</router-link>
@@ -87,6 +87,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import Icon from '../components/Icon.vue'
 
 const finishedItems = ref([
   {
